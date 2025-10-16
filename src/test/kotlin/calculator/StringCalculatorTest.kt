@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 class StringCalculatorTest {
 
     @Nested
-    @DisplayName("1단계: 입출력 인터페이스")
+    @DisplayName("1. 입출력 인터페이스")
     inner class Step1InputOutputInterface {
 
         @Test
@@ -59,6 +59,43 @@ class StringCalculatorTest {
             assertDoesNotThrow { StringCalculator.add("1,2") }
             assertDoesNotThrow { StringCalculator.add("") }
             assertDoesNotThrow { StringCalculator.add(null) }
+        }
+    }
+
+    @Nested
+    @DisplayName("2. 입력 전처리 및 빈 문자열 처리")
+    inner class Step2_InputPreprocessing {
+
+        @Test
+        @DisplayName("null 입력을 빈 문자열로 변환하여 0을 반환한다")
+        fun `null_입력_빈_문자열_변환하여_0_반환`() {
+            assertEquals(0, StringCalculator.add(null))
+        }
+
+        @Test
+        @DisplayName("다양한 공백 패턴을 빈 문자열로 변환하여 0을 반환한다")
+        fun `다양한_공백_패턴_빈_문자열_변환`() {
+            assertEquals(0, StringCalculator.add(""))
+            assertEquals(0, StringCalculator.add("   "))
+            assertEquals(0, StringCalculator.add(" \t\n "))
+            assertEquals(0, StringCalculator.add("\r \n"))
+        }
+
+        @Test
+        @DisplayName("앞뒤 공백을 제거한 후 처리한다")
+        fun `앞뒤_공백_제거_처리`() {
+            assertEquals(3, StringCalculator.add(" 1,2 "))
+            assertEquals(6, StringCalculator.add("  1,2:3  "))
+            assertEquals(5, StringCalculator.add(" 5 "))
+        }
+
+        @Test
+        @DisplayName("전처리 과정이 예외 없이 동작한다")
+        fun `전처리_과정_예외_없이_동작`() {
+            assertDoesNotThrow { StringCalculator.add(null) }
+            assertDoesNotThrow { StringCalculator.add("") }
+            assertDoesNotThrow { StringCalculator.add("   ") }
+            assertDoesNotThrow { StringCalculator.add(" 1,2 ") }
         }
     }
 }
