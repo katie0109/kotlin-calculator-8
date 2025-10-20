@@ -4,7 +4,9 @@ object StringCalculator {
     fun add(input: String?): Int {
         // null이나 공백만 있으면 0 반환
         if (input.isNullOrBlank()) return 0
-        val normalizedInput = input.trim()
+
+        // 입력 정규화: \\n 리터럴을 실제 개행으로 변환
+        val normalizedInput = input.trim().replace("\\n", "\n")
 
         // 커스텀 구분자 형식인지 확인하여 분기 처리
         return if (isCustomDelimiterFormat(normalizedInput)) {
