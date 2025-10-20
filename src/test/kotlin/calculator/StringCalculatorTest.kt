@@ -132,14 +132,14 @@ class StringCalculatorTest {
         @Test
         @DisplayName("모드 분기에 따른 처리 확인")
         fun 모드별_처리_확인() {
-            // 기본 모드 (하드코딩 유지)
+            // 기본 모드
             assertEquals(3, StringCalculator.add("1,2"))
             assertEquals(6, StringCalculator.add("1,2:3"))
 
-            // 커스텀 모드 (하드코딩 + 신규 케이스 임시값)
+            // 커스텀 모드 (실제 계산값으로 수정)
             assertEquals(6, StringCalculator.add("//;\n1;2;3"))
             assertEquals(6, StringCalculator.add("//|\n1|2|3"))
-            assertEquals(10, StringCalculator.add("//#\n1#2#3"))
+            assertEquals(6, StringCalculator.add("//#\n1#2#3"))  // 10 → 6으로 수정
         }
     }
 
@@ -185,7 +185,53 @@ class StringCalculatorTest {
         fun 커스텀_구분자_기존_방식_유지() {
             assertEquals(6, StringCalculator.add("//;\n1;2;3"))
             assertEquals(6, StringCalculator.add("//|\n1|2|3"))
-            assertEquals(10, StringCalculator.add("//#\n1#2#3"))
+            assertEquals(6, StringCalculator.add("//#\n1#2#3"))  // 10 → 6으로 수정
+        }
+    }
+
+    @Nested
+    @DisplayName("5단계: 커스텀 구분자 파싱")
+    inner class Step5_CustomDelimiterParsing {
+
+        @Test
+        @DisplayName("세미콜론 커스텀 구분자")
+        fun 세미콜론_커스텀_구분자() {
+            assertEquals(6, StringCalculator.add("//;\n1;2;3"))
+            assertEquals(10, StringCalculator.add("//;\n1;2;3;4"))
+            assertEquals(1, StringCalculator.add("//;\n1"))
+        }
+
+        @Test
+        @DisplayName("다양한 일반 문자 구분자")
+        fun 다양한_일반_문자_구분자() {
+            assertEquals(6, StringCalculator.add("//#\n1#2#3"))
+            assertEquals(6, StringCalculator.add("//&\n1&2&3"))
+            assertEquals(6, StringCalculator.add("//a\n1a2a3"))
+        }
+
+        @Test
+        @DisplayName("정규식 특수문자 구분자 처리")
+        fun 정규식_특수문자_구분자_처리() {
+            assertEquals(6, StringCalculator.add("//.\n1.2.3"))
+            assertEquals(6, StringCalculator.add("//|\n1|2|3"))
+            assertEquals(6, StringCalculator.add("//*\n1*2*3"))
+            assertEquals(6, StringCalculator.add("//+\n1+2+3"))
+            assertEquals(6, StringCalculator.add("//?\n1?2?3"))
+        }
+
+        @Test
+        @DisplayName("커스텀 구분자로 큰 숫자 처리")
+        fun 커스텀_구분자_큰_숫자_처리() {
+            assertEquals(60, StringCalculator.add("//;\n10;20;30"))
+            assertEquals(600, StringCalculator.add("//|\n100|200|300"))
+        }
+
+        @Test
+        @DisplayName("기본 구분자는 여전히 정상 동작")
+        fun 기본_구분자_정상_동작_유지() {
+            assertEquals(6, StringCalculator.add("1,2,3"))
+            assertEquals(6, StringCalculator.add("1:2:3"))
+            assertEquals(6, StringCalculator.add("1,2:3"))
         }
     }
 }
