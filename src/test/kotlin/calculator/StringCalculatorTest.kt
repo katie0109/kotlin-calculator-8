@@ -98,4 +98,48 @@ class StringCalculatorTest {
             assertDoesNotThrow { StringCalculator.add(" 1,2 ") }
         }
     }
+
+    @Nested
+    @DisplayName("3단계: 구분자 감지 및 분류")
+    inner class Step3_DelimiterDetection {
+
+        @Test
+        @DisplayName("기본 구분자 모드 감지")
+        fun 기본_구분자_모드_감지() {
+            assertFalse(StringCalculator.isCustomDelimiterFormat("1,2"))
+            assertFalse(StringCalculator.isCustomDelimiterFormat("1:2"))
+            assertFalse(StringCalculator.isCustomDelimiterFormat("123"))
+            assertFalse(StringCalculator.isCustomDelimiterFormat("//;1;2;3")) // \n 없음
+        }
+
+        @Test
+        @DisplayName("커스텀 구분자 모드 감지")
+        fun 커스텀_구분자_모드_감지() {
+            assertTrue(StringCalculator.isCustomDelimiterFormat("//;\n1;2;3"))
+            assertTrue(StringCalculator.isCustomDelimiterFormat("//|\n1|2|3"))
+            assertTrue(StringCalculator.isCustomDelimiterFormat("//*\n1*2*3"))
+            assertTrue(StringCalculator.isCustomDelimiterFormat("//.\n1.2.3"))
+        }
+
+        @Test
+        @DisplayName("경계 케이스 처리")
+        fun 경계_케이스_처리() {
+            assertFalse(StringCalculator.isCustomDelimiterFormat("//"))
+            assertFalse(StringCalculator.isCustomDelimiterFormat("//\n"))
+            assertFalse(StringCalculator.isCustomDelimiterFormat("/\n1;2"))
+        }
+
+        @Test
+        @DisplayName("모드 분기에 따른 처리 확인")
+        fun 모드별_처리_확인() {
+            // 기본 모드 (하드코딩 유지)
+            assertEquals(3, StringCalculator.add("1,2"))
+            assertEquals(6, StringCalculator.add("1,2:3"))
+
+            // 커스텀 모드 (하드코딩 + 신규 케이스 임시값)
+            assertEquals(6, StringCalculator.add("//;\n1;2;3"))
+            assertEquals(6, StringCalculator.add("//|\n1|2|3"))
+            assertEquals(10, StringCalculator.add("//#\n1#2#3"))
+        }
+    }
 }
