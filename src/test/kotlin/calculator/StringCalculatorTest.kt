@@ -234,4 +234,61 @@ class StringCalculatorTest {
             assertEquals(6, StringCalculator.add("1,2:3"))
         }
     }
+
+    @Nested
+    @DisplayName("6단계: 토큰 분할 및 검증")
+    inner class Step6_TokenValidation {
+
+        @Test
+        @DisplayName("연속 구분자로 인한 빈 토큰 예외 처리")
+        fun 연속_구분자_빈_토큰_예외() {
+            // 기본 구분자
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("1,,2") }
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("1::2") }
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("1,2,") }
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add(",1,2") }
+        }
+
+        @Test
+        @DisplayName("커스텀 구분자 빈 토큰 예외 처리")
+        fun 커스텀_구분자_빈_토큰_예외() {
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("//;\n1;;2") }
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("//;\n;1;2") }
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("//;\n1;2;") }
+        }
+
+        @Test
+        @DisplayName("공백만 있는 토큰 예외 처리")
+        fun 공백_토큰_예외() {
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("1, ,2") }
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("1:\t:2") }
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("//;\n1; ;2") }
+        }
+
+        @Test
+        @DisplayName("숫자가 아닌 토큰 예외 처리")
+        fun 숫자_아닌_토큰_예외() {
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("1,a,2") }
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("1:xyz:2") }
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("//;\n1;hello;2") }
+        }
+
+        @Test
+        @DisplayName("정상적인 토큰은 올바르게 합산")
+        fun 정상_토큰_올바른_합산() {
+            assertEquals(6, StringCalculator.add("1,2,3"))
+            assertEquals(6, StringCalculator.add("1:2:3"))
+            assertEquals(6, StringCalculator.add("//;\n1;2;3"))
+            assertEquals(15, StringCalculator.add("1,2:3,4,5"))
+        }
+
+        @Test
+        @DisplayName("기존 기능 정상 동작 유지")
+        fun 기존_기능_정상_동작() {
+            assertEquals(0, StringCalculator.add(""))
+            assertEquals(5, StringCalculator.add("5"))
+            assertEquals(6, StringCalculator.add("//|\n1|2|3"))
+        }
+    }
+
 }
