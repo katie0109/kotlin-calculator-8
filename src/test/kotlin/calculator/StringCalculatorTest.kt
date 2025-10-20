@@ -142,4 +142,50 @@ class StringCalculatorTest {
             assertEquals(10, StringCalculator.add("//#\n1#2#3"))
         }
     }
+
+    @Nested
+    @DisplayName("4단계: 기본 구분자 처리")
+    inner class Step4_DefaultDelimiters {
+
+        @Test
+        @DisplayName("쉼표 구분자 처리")
+        fun 쉼표_구분자_처리() {
+            assertEquals(3, StringCalculator.add("1,2"))
+            assertEquals(6, StringCalculator.add("1,2,3"))
+            assertEquals(10, StringCalculator.add("1,2,3,4"))
+            assertEquals(15, StringCalculator.add("1,2,3,4,5"))
+        }
+
+        @Test
+        @DisplayName("콜론 구분자 처리")
+        fun 콜론_구분자_처리() {
+            assertEquals(3, StringCalculator.add("1:2"))
+            assertEquals(6, StringCalculator.add("1:2:3"))
+            assertEquals(10, StringCalculator.add("1:2:3:4"))
+        }
+
+        @Test
+        @DisplayName("혼재된 구분자 처리")
+        fun 혼재된_구분자_처리() {
+            assertEquals(6, StringCalculator.add("1,2:3"))
+            assertEquals(10, StringCalculator.add("1:2,3:4"))
+            assertEquals(15, StringCalculator.add("1,2:3,4:5"))
+        }
+
+        @Test
+        @DisplayName("단일 숫자 처리")
+        fun 단일_숫자_처리() {
+            assertEquals(1, StringCalculator.add("1"))
+            assertEquals(5, StringCalculator.add("5"))
+            assertEquals(123, StringCalculator.add("123"))
+        }
+
+        @Test
+        @DisplayName("커스텀 구분자는 기존 방식 유지")
+        fun 커스텀_구분자_기존_방식_유지() {
+            assertEquals(6, StringCalculator.add("//;\n1;2;3"))
+            assertEquals(6, StringCalculator.add("//|\n1|2|3"))
+            assertEquals(10, StringCalculator.add("//#\n1#2#3"))
+        }
+    }
 }

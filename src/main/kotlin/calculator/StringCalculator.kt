@@ -29,14 +29,9 @@ object StringCalculator {
         }
     }
 
-    // 기본 구분자 처리 (임시 하드코딩)
+    // 쉼표, 콜론으로 분할하여 합산
     private fun processWithDefaultDelimiter(input: String): Int {
-        return when (input) {
-            "1,2" -> 3
-            "1,2,3" -> 6
-            "1,2:3" -> 6
-            "5" -> 5
-            else -> 1
-        }
+        val tokens = input.split(Regex("[,:]"))
+        return tokens.sumOf { it.toIntOrNull() ?: 0 }
     }
 }
