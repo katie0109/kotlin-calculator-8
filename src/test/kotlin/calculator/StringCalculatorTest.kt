@@ -345,4 +345,52 @@ class StringCalculatorTest {
         }
     }
 
+    @Nested
+    @DisplayName("8단계: 합산 계산")
+    inner class Step8_SumCalculation {
+
+        @Test
+        @DisplayName("정상적인 합산 계산")
+        fun 정상_합산_계산() {
+            assertEquals(6, StringCalculator.add("1,2,3"))
+            assertEquals(15, StringCalculator.add("1,2,3,4,5"))
+            assertEquals(10, StringCalculator.add("//;\n1;2;3;4"))
+        }
+
+        @Test
+        @DisplayName("Int 최대값 근처의 안전한 계산")
+        fun Int_최대값_근처_안전한_계산() {
+            assertEquals(2147483647, StringCalculator.add("2147483647"))  // Int.MAX_VALUE
+            assertEquals(2147483646, StringCalculator.add("2147483645,1"))
+        }
+
+        @Test
+        @DisplayName("Int 범위 초과 시 예외 발생")
+        fun Int_범위_초과_예외_발생() {
+            val exception = assertThrows(IllegalArgumentException::class.java) {
+                StringCalculator.add("2147483647,1")  // Int.MAX_VALUE + 1 = 2147483648
+            }
+            assertTrue(exception.message!!.contains("계산 결과가 Int 범위를 초과합니다"))
+            assertTrue(exception.message!!.contains("2147483648"))
+        }
+
+        @Test
+        @DisplayName("큰 수들의 합산으로 오버플로우 발생")
+        fun 큰_수들_합산_오버플로우() {
+            assertThrows(IllegalArgumentException::class.java) {
+                StringCalculator.add("1000000000,1000000000,500000000")  // 2.5억
+            }
+        }
+
+        @Test
+        @DisplayName("기존 모든 검증 기능 정상 동작")
+        fun 기존_검증_기능_정상_동작() {
+            assertEquals(0, StringCalculator.add(""))
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("1,,2") }
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("1,a,2") }
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("1,0,2") }
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("1,-1,2") }
+        }
+    }
+
 }

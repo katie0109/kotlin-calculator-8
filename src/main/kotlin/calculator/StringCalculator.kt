@@ -40,7 +40,7 @@ object StringCalculator {
 
     // 토큰 검증 및 합산
     private fun validateAndSumTokens(tokens: List<String>): Int {
-        var sum = 0
+        var sum: Long = 0  // Long으로 중간 계산하여 오버플로우 방지
         for (token in tokens) {
             // 빈 값이나 공백만 있는 토큰 검증
             if (token.isBlank()) {
@@ -57,6 +57,11 @@ object StringCalculator {
             }
             sum += number
         }
-        return sum
+        // Int 범위 초과 검증
+        if (sum > Int.MAX_VALUE) {
+            throw IllegalArgumentException("계산 결과가 Int 범위를 초과합니다: $sum")
+        }
+
+        return sum.toInt()
     }
 }
