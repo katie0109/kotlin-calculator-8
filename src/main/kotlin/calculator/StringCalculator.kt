@@ -51,6 +51,10 @@ object StringCalculator {
             val number = token.toIntOrNull()
                 ?: throw IllegalArgumentException("'$token'은(는) 올바른 숫자가 아닙니다.")
 
+            // 양수 검증
+            if (number <= 0) { // 0도 양수가 아니므로 예외 발생
+                throw IllegalArgumentException("양수만 입력할 수 있습니다: $number")
+            }
             sum += number
         }
         return sum

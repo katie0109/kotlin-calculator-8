@@ -291,4 +291,58 @@ class StringCalculatorTest {
         }
     }
 
+    @Nested
+    @DisplayName("7단계: 숫자 검증 및 변환")
+    inner class Step7_NumberValidation {
+
+        @Test
+        @DisplayName("음수 입력 시 예외 발생")
+        fun 음수_입력_예외() {
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("1,-2,3") }
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("-5") }
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("//;\n1;-3;2") }
+        }
+
+        @Test
+        @DisplayName("0 입력 시 예외 발생")
+        fun 영_입력_예외() {
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("1,0,3") }
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("0") }
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("//;\n1;0;2") }
+        }
+
+        @Test
+        @DisplayName("예외 메시지가 명확하게 표시된다")
+        fun 예외_메시지_명확성() {
+            val negativeException = assertThrows(IllegalArgumentException::class.java) {
+                StringCalculator.add("1,-5,3")
+            }
+            assertTrue(negativeException.message!!.contains("양수만 입력할 수 있습니다: -5"))
+
+            val zeroException = assertThrows(IllegalArgumentException::class.java) {
+                StringCalculator.add("1,0,3")
+            }
+            assertTrue(zeroException.message!!.contains("양수만 입력할 수 있습니다: 0"))
+        }
+
+        @Test
+        @DisplayName("양수만 포함된 경우 정상 계산")
+        fun 양수만_포함_정상_계산() {
+            assertEquals(6, StringCalculator.add("1,2,3"))
+            assertEquals(15, StringCalculator.add("1,2,3,4,5"))
+            assertEquals(6, StringCalculator.add("//;\n1;2;3"))
+        }
+
+        @Test
+        @DisplayName("기존 6단계 검증 기능 유지")
+        fun 기존_검증_기능_유지() {
+            // 빈 토큰 검증 유지
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("1,,2") }
+            // 숫자 아닌 값 검증 유지
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("1,a,2") }
+            // 공백 토큰 검증 유지
+            assertThrows(IllegalArgumentException::class.java) { StringCalculator.add("1, ,2") }
+        }
+    }
+
 }
