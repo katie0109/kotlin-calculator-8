@@ -20,13 +20,15 @@ object StringCalculator {
         return input.startsWith("//") && input.indexOf('\n', 2) > 2
     }
 
-    // 커스텀 구분자 처리 (임시 하드코딩)
+    /// 커스텀 구분자 추출 후 분할하여 합산
     private fun processWithCustomDelimiter(input: String): Int {
-        return when (input) {
-            "//;\n1;2;3" -> 6
-            "//|\n1|2|3" -> 6
-            else -> 10  // 감지 확인용 임시값
-        }
+        val newlineIndex = input.indexOf('\n')
+        val customDelimiter = input.substring(2, newlineIndex)  // "//" 이후부터 "\n" 이전까지
+        val numbersText = input.substring(newlineIndex + 1)     // "\n" 이후 숫자 부분
+
+        // 정규식 특수문자 안전 처리
+        val tokens = numbersText.split(Regex(Regex.escape(customDelimiter)))
+        return tokens.sumOf { it.toIntOrNull() ?: 0 }
     }
 
     // 쉼표, 콜론으로 분할하여 합산
